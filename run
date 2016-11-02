@@ -1,0 +1,129 @@
+#!/bin/bash
+
+#----------------------------------------------------------------------------------------------------
+
+function PrintUsage()
+{
+	echo -e "USAGE: run <src file> <dir> <dir> ..."
+}
+
+#----------------------------------------------------------------------------------------------------
+
+diag_45b_56t="y"
+diag_45t_56b="y"
+
+#----------------------------------------------------------------------------------------------------
+
+function RunOneDiagonal()
+{
+	tag="$1"
+	dir="$2"
+	par_more="$3"
+	diag="$4"
+
+	label="$tag @ $dir:$diag"
+
+	echo "$label > running"
+	"./$exe_file" "$diag" &> "${tag}_${diag}.log_run"
+	if [ $? -eq 0 ]
+	then
+		echo "$label > done"
+	else
+		echo "$label > run error"
+		if [ "$par_more" -eq 1 ]; then tail -n 5 "${tag}_${diag}.log_run"; fi
+	fi
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function RunOneDir()
+{
+	src_file="$1"
+	tag="${src_file%.*}"
+	exe_file="$tag"
+	dir="$2"
+	par_more="$3"
+
+	cp "$1" "$dir/$1"
+	cd "$dir"
+	
+	echo "$tag @ $dir > compiling"
+	gcc `root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` -O3 -Wall -I"$CMSSW_BASE/src" \
+			-L"$CMSSW_BASE/lib/slc5_amd64_gcc434" -lTotemAnalysisTotemNtuplizer \
+			"$src_file" -o "$exe_file" &> "$tag.log_compile"
+
+	# compilation error?
+ 	if [ $? -ne 0 ]
+	then
+		echo "$tag @ $dir > error in compilation"
+		if [ "$par_more" -eq 1 ]; then cat "$tag.log_compile"; fi
+		return
+	fi
+
+	if [ ! -s "$tag.log_compile" ]
+	then
+		rm "$tag.log_compile"
+	fi
+
+	# run
+	if [ "$diag_45b_56t" == "y" ]
+	then
+		RunOneDiagonal "$tag" "$dir" "$par_more" "45b_56t" &
+	fi
+
+	if [ "$diag_45t_56b" == "y" ]
+	then
+		RunOneDiagonal "$tag" "$dir" "$par_more" "45t_56b" &
+	fi
+}
+
+#----------------------------------------------------------------------------------------------------
+
+if [ $# -le 0 ]
+then
+	PrintUsage
+	exit 1
+fi
+
+src_file="$1"
+src_file="${src_file%.*}.cc"
+
+if [ ! -f "$src_file" ]
+then
+	echo "ERROR: '$src_file' doesn't exist"
+	PrintUsage
+	exit 2
+fi
+
+shift
+
+while [ -n "$1" ]
+do
+	case "$1" in
+		"-d1" | "-d45b")
+			diag_45b_56t="y"
+			diag_45t_56b="n"
+			;;
+		
+		"-d2" | "-d45t")
+			diag_45b_56t="n"
+			diag_45t_56b="y"
+			;;
+
+		"-d12" | "-d21")
+			diag_45b_56t="y"
+			diag_45t_56b="y"
+			;;
+
+		*)
+			if [ ! -d "$1" ]
+			then
+				echo "ERROR: '$1' is not a directory"
+			else
+				RunOneDir "$src_file" "$1" "$?" &
+			fi
+			;;
+	esac
+
+	shift
+done

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+make || exit 1
+
+./mc "none" &
+./mc "none,smp" &
+./mc "none,smm" &
+./mc "misal" &
+./mc "optics:yp" &
+./mc "optics:xp" &
+./mc "optics:ypxp" &
+./mc "optics:ypxp,smp" &
+./mc "optics:ypxp,smm" &
+./mc "optics:ypxm" &
+./mc "misal_optics:ypxp" &
+./mc "enoff" &
