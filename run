@@ -48,8 +48,12 @@ function RunOneDir()
 	cd "$dir"
 	
 	echo "$tag @ $dir > compiling"
-	gcc `root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` -O3 -Wall -I"$CMSSW_BASE/src" \
-			-L"$CMSSW_BASE/lib/slc5_amd64_gcc434" -lTotemAnalysisTotemNtuplizer \
+	g++ -O3 -Wall -Wextra --std=c++11\
+			`root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` \
+			-I"$CMSSW_BASE/src" \
+			-I"/afs/cern.ch/cms/slc6_amd64_gcc481/external/fastjet/3.0.3/include" \
+			-L"$CMSSW_BASE/lib/slc6_amd64_gcc481" \
+			-lTotemAnalysisTotemNtuplizer \
 			"$src_file" -o "$exe_file" &> "$tag.log_compile"
 
 	# compilation error?
