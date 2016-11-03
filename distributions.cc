@@ -145,12 +145,18 @@ int main(int argc, char **argv)
 	map<unsigned int, TH1D *> h_cq;
 	map<unsigned int, TH2D *> h2_cq, h2_cq_full;
 	map<unsigned int, TGraph *> g_cq;
-	for (map<unsigned int, double>::iterator cit = csi.begin(); cit != csi.end(); ++cit) {
+	for (map<unsigned int, double>::iterator cit = csi.begin(); cit != csi.end(); ++cit)
+	{
 		unsigned i = cit->first;
 		char name[100], title[100];
-		sprintf(name, "h_cq%i", i); sprintf(title, ";cq%i", i); h_cq[i] = new TH1D(name, title, 300, 0, 0);
-		sprintf(name, "h2_cq%i", i); sprintf(title, ";cqa%i;cqb%i", i, i); h2_cq[i] = new TH2D(name, title, 100, 0, 0, 100, 0, 0);
-		sprintf(name, "h2_cq_full%i", i); sprintf(title, ";cqa%i;cqb%i", i, i); h2_cq_full[i] = new TH2D(name, title, 200, 0, 0, 200, 0, 0);
+
+		double q_min = 0., q_max =0., x_min = 0., x_max = 0., y_min = 0., y_max = 0.;
+
+		if (i == 7) { x_min = -0.4E-3; x_max = +0.4E-3, y_min = -0.2; y_max = +0.2; }
+
+		sprintf(name, "h_cq%i", i); sprintf(title, ";cq%i", i); h_cq[i] = new TH1D(name, title, 300, q_min, q_max);
+		sprintf(name, "h2_cq%i", i); sprintf(title, ";cqa%i;cqb%i", i, i); h2_cq[i] = new TH2D(name, title, 200, x_min, x_max, 200, y_min, y_max);
+		sprintf(name, "h2_cq_full%i", i); sprintf(title, ";cqa%i;cqb%i", i, i); h2_cq_full[i] = new TH2D(name, title, 200, x_min, x_max, 200, y_min, y_max);
 		//sprintf(name, "g_cq%i", i); sprintf(title, ";cqa%i;cqb%i", i, i); g_cq[i] = new TGraph(); g_cq[i]->SetName(name); g_cq[i]->SetTitle(title);
 	}
 	
@@ -811,6 +817,9 @@ int main(int argc, char **argv)
 		c->SetLogz(1);
 		h2_cq_full[i]->Draw("colz");
 		double lim = (i < 5 || i > 6) ? 3E-4 : 30.;
+
+		// TODO
+
 		double qa[2] = {-lim, +lim};
 		double qbp[2]= {(+n_si*csi[i] - cca[i]*qa[0] - ccc[i])/ccb[i], (+n_si*csi[i] - cca[i]*qa[1] - ccc[i])/ccb[i]};
 		double qbm[2]= {(-n_si*csi[i] - cca[i]*qa[0] - ccc[i])/ccb[i], (-n_si*csi[i] - cca[i]*qa[1] - ccc[i])/ccb[i]};
