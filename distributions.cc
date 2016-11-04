@@ -204,6 +204,10 @@ int main(int argc, char **argv)
 	TH1D *h_th_x_L = new TH1D("h_th_x_L", ";#theta_{x}^{L}", 100, 0, 0);
 	TH1D *h_th_x_R = new TH1D("h_th_x_R", ";#theta_{x}^{R}", 100, 0, 0);
 	
+	TH1D *h_vtx_x = new TH1D("h_vtx_x", ";vtx_{x}   (mm)", 200, -0.8, +0.8);
+	TH1D *h_vtx_x_L = new TH1D("h_vtx_x_L", ";#vtx_{x}^{L}   (mm)", 200, -0.8, +0.8);
+	TH1D *h_vtx_x_R = new TH1D("h_vtx_x_R", ";#vtx_{x}^{R}   (mm)", 200, -0.8, +0.8);
+	
 	TProfile *p_nu_L_F_vs_th_x_L = new TProfile("p_nu_L_F_vs_th_x_L", ";#theta_{x}^{L};#nu^{L,F}", 100, 0., 0.);
 	TProfile *p_nu_L_N_vs_th_x_L = new TProfile("p_nu_L_N_vs_th_x_L", ";#theta_{x}^{L};#nu^{L,N}", 100, 0., 0.);
 	TProfile *p_nu_R_F_vs_th_x_R = new TProfile("p_nu_R_F_vs_th_x_R", ";#theta_{x}^{R};#nu^{R,F}", 100, 0., 0.);
@@ -549,6 +553,10 @@ int main(int argc, char **argv)
 		p_nu_L_N_vs_th_x_L->Fill(th_x_L, nu_L_N);
 		p_nu_R_F_vs_th_x_R->Fill(th_x_R, nu_R_F);
 		p_nu_R_N_vs_th_x_R->Fill(th_x_R, nu_R_N);
+
+		h_vtx_x->Fill(vtx_x);
+		h_vtx_x_L->Fill(vtx_x_L);
+		h_vtx_x_R->Fill(vtx_x_R);
 	
 		p_vtx_x_L_vs_th_x->Fill(th_x, vtx_x_L);
 		p_vtx_x_L_vs_th_x_L->Fill(th_x_L, vtx_x_L);
@@ -888,6 +896,10 @@ int main(int argc, char **argv)
 	p_nu_L_N_vs_th_x_L->Write();
 	p_nu_R_F_vs_th_x_R->Write();
 	p_nu_R_N_vs_th_x_R->Write();
+
+	h_vtx_x->Write();
+	h_vtx_x_L->Write();
+	h_vtx_x_R->Write();
 	
 	p_vtx_x_L_vs_th_x_L->Write();
 	p_vtx_x_L_vs_th_x->Write();
